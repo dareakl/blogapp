@@ -67,7 +67,26 @@ const Login = async (req, res) => {
       user: FindUser,
       token,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server error" });
+  }
 };
 
-export { Register, Login };
+const Logout = async (req, res) => {
+  try {
+    // Clear the token cookie
+    res.clearCookie("token");
+
+    // Return success message
+    res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    // Handle error
+    console.error("Error logging out:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export { Register, Login, Logout };
