@@ -1,4 +1,5 @@
 import UserModel from "../models/user.js";
+import bcrypt from "bcryptjs";
 
 const Register = async (req, res) => {
   try {
@@ -11,10 +12,11 @@ const Register = async (req, res) => {
         .json({ success: false, message: "User already Exist Please Login" });
     }
     const imagePath = req.file.filename;
+    const hashpassword = await bcrypt.hashSync(password, 10);
     const NewUser = new UserModel({
       fullname,
       email,
-      password,
+      password: hashpassword,
       profile: imagePath,
     });
 
@@ -32,4 +34,30 @@ const Register = async (req, res) => {
   }
 };
 
-export { Register };
+const Login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All Fields are required" });
+    }
+    const FindUser = await UserModel.findOne({ email });
+    if (!FindUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No user found please register" });
+    }
+    const ComparePassword = await bcrypt.compare(password, FindUser.password);
+    if (!ComparePassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Password not matched" });
+    }
+    res
+      .status(200)
+      .json({ success: true, message: "Login Successfully", user: FindUser });
+  } catch (error) {}
+};
+
+export { Register, Login };
