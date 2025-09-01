@@ -11,6 +11,7 @@ const app = express();
 
 //mongodb connection
 DBCon();
+app.use(express.static("public"));
 app.use(cookieParser());
 app.use(express.json());
 
