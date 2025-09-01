@@ -1,5 +1,6 @@
 import UserModel from "../models/user.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const Register = async (req, res) => {
   try {
@@ -54,9 +55,18 @@ const Login = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Password not matched" });
     }
-    res
-      .status(200)
-      .json({ success: true, message: "Login Successfully", user: FindUser });
+    const token = jwt.sign({ userId: FindUser._id }, process.env.JWT_SECRET);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Login Successfully",
+      user: FindUser,
+      token,
+    });
   } catch (error) {}
 };
 
