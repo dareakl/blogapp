@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import DBCon from "./utils/db.js";
 import AuthRoutes from "./routes/Auth.js";
 import cookieParser from "cookie-parser";
+import BlogsRoutes from "./routes/Blog.js";
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", AuthRoutes);
+app.use("/blog", BlogsRoutes);
 
 app.listen(PORT, () => {
   console.log(`app is running on PORT ${PORT}`);
